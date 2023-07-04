@@ -32,11 +32,11 @@
             <td scope="row">{{user.division}}</td>
             <td scope="row">{{user.building}}</td>
             <td scope="row">{{user.room}}</td>
-            <td><button class="btn btn-primary btn_edit">Edit</button>
+
+            <td><a class="btn btn-primary btn_edit" href="{% url 'edit_employee' user.id %}">Edit</a>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
 </body>
 </html>
