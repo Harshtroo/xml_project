@@ -106,10 +106,9 @@ class EmployeeDelete(View):
 
 
 class EmployeeAdd(View):
-    template_name = "employee_add.html"
+    template_name = "user_list.html"
 
     def get(self, request, *args, **kwargs):
-
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
