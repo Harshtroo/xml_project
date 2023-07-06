@@ -1,13 +1,13 @@
-//$("#employeeadd").on("click",function(){
-//    console.log("hello")
-//    $("show_employeeadd_modal").modal("show")
-//})
+$("#employeeadd").on("click",function(){
+    console.log("hello")
+    $("#staticBackdrop").modal("show")
+})
 
 $(document).ready(function() {
     $("#addEmployeeForm").submit(function(e) {
         e.preventDefault();
         console.log("cdcdbu")
-        
+
         $.ajax({
             url: employeeAddUrl,
             type: "POST",

@@ -109,6 +109,7 @@ class EmployeeAdd(View):
     template_name = "employee_add.html"
 
     def get(self, request, *args, **kwargs):
+
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
@@ -120,16 +121,13 @@ class EmployeeAdd(View):
 
             user_id = request.POST["id"]
             existing_employee_ids = [employee.attrib.get("id") for employee in root.findall("employee")]
-
             if user_id in existing_employee_ids:
                 error_message = f"Employee with ID '{user_id}' already exists."
-                return JsonResponse({"error_message": error_message}, status=400)
+                return JsonResponse({"message": error_message}, status=400)
 
-        # Create a new employee element
             employee = ET.Element("employee")
             employee.set("id", request.POST["id"])
 
-        # Create child elements for the employee
             firstname = ET.SubElement(employee, "firstname")
             firstname.text = request.POST["firstname"]
 
@@ -150,7 +148,6 @@ class EmployeeAdd(View):
 
             # Append the new employee element to the root
             root.append(employee)
-
             # Save the updated XML back to the file
             current_time = datetime.now().strftime("%Y_%m_%d-%I-%M-%S")
             file_path = f'app_xml/static/xml/user_data-{current_time}.xml'
