@@ -15,11 +15,21 @@ $(document).ready(function() {
             url: employeeAddURL,
             type: "POST",
             data: $(this).serialize(),
-            success: function(response) {
-                window.location.href = employeeRedirectURL;
+            success: function(data) {
+                    window.location.href = employeeRedirectURL;
+                    console.log("message======",data.message)
+                    if(data.message){
+                    setTimeout(function (){
+                         $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
+                        },1000)
+                        setTimeout(function(){
+                            $('.output').remove();
+                          }, 3000);
+                    }
+//                    debugger
             },
-            error: function(message) {
-                var errorMessage = message.responseJSON.message;
+            error: function(data) {
+                var errorMessage = data.error;
                 $("#errorMessage").text(errorMessage);
             }
         });

@@ -7,4 +7,5 @@ urlpatterns = [
     path("edit_employee/<str:id>/",views.EmployeeEdit.as_view(),name="edit_employee"),
     path("delete_employee/<str:id>/", views.EmployeeDelete.as_view(), name="delete_employee"),
     path("add_employee/",views.EmployeeAdd.as_view(),name="add_employee"),
+    path("xml_file_list/",views.xml_list,name="xml_file_list"),
 ]

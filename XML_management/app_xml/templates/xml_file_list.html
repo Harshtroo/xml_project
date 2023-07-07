@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/xml_file_list.css' %}">
+<button type="button" class="btn btn-primary btn_edit" id="btn_compare" >compare</button>
+
+<table class="table table-bordered" align="center">
+      <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" align="center">Employee Data</h3>
+     <thead>
+      <tr class="table-dark">
+          <th scope="col">No.</th>
+          <th scope="col"> </th>
+          <th scope="col">File name</th>
+      </tr>
+    </thead>
+     <tbody>
+     {% for obj in page_obj %}
+     {% with actual_number=page_obj.start_index|add:forloop.counter0 %}
+        <tr>
+             <td scope="row">{{ actual_number }}</td>
+             <td scope="row" ><input type="checkbox" id="coding" class="check_select" name="interest"/></td>
+             <td scope="row">{{ obj }}</td>
+        </tr>
+     {% endwith %}
+      {% endfor %}
+     </tbody>
+</table>
+
+
+<div class="pagination-container">
+<!--    <div class="">-->
+<!--      Showing page {{page_obj.number}} of {{ page_obj.paginator.num_pages }}-->
+<!--    </div>-->
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li {% if page_obj.number == 1 %} class="page-item active" {% endif %}><a class="page-link" href="?page=1">« 1</a></li>
+      <li class="page-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+
+  {% if page_obj.has_next %}
+  <li class="page-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+  <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages}} &raquo;</a></li>
+  {% endif %}
+  </ul>
+  </div>
+
+<script src="{% static 'js/xml_file_list.js' %}"></script>
+
+{% endblock %}

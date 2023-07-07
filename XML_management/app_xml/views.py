@@ -7,8 +7,9 @@ from django.urls import reverse
 from datetime import datetime
 import glob
 import os
-from django.contrib import messages
 from django.http import JsonResponse
+from django.core.paginator import Paginator
+
 
 def get_latest_file():
     files = glob.glob(settings.XML_FILE_PATH)
@@ -29,7 +30,8 @@ def show_xml_file(request):
                 del value["@id"]
             return render(request,"user_list.html", {"user_data": user_data["employee"]})
         except Exception as e:
-            return e
+            return JsonResponse({"error_message": str(e)}, status=500)
+
 
 class EmployeeEdit(View):
     template_name = "employee_update.html"
@@ -44,7 +46,7 @@ class EmployeeEdit(View):
                 for value in user_data["employee"]:
                     employee_id = value["@id"]
                     if employee_id == self.kwargs["id"]:
-                        select_employee_data = {"id":value.get("@id"),
+                        select_employee_data = {"id": value.get("@id"),
                                                 "firstname": value.get("firstname"),
                                                 "lastname": value.get("lastname"),
                                                 "title": value.get("title"),
@@ -53,7 +55,7 @@ class EmployeeEdit(View):
                                                 "room": value.get("room"),}
                 return render(request,self.template_name,{"select_employee_data": select_employee_data})
             except Exception as e:
-                return e
+                return JsonResponse({"error_message": str(e)}, status=500)
 
     def post(self, request, *args, **kwargs):
         latest_file_path = get_latest_file()
@@ -80,7 +82,7 @@ class EmployeeEdit(View):
             return redirect("/")
 
         except Exception as e:
-            return e
+            return JsonResponse({"error_message": str(e)}, status=500)
 
 
 class EmployeeDelete(View):
@@ -102,7 +104,7 @@ class EmployeeDelete(View):
             return redirect("/")
         # return JsonResponse({"messages": "success"})
         except Exception as e:
-            return e
+            return JsonResponse({"error_message": str(e)}, status=500)
 
 
 class EmployeeAdd(View):
@@ -122,7 +124,7 @@ class EmployeeAdd(View):
             existing_employee_ids = [employee.attrib.get("id") for employee in root.findall("employee")]
             if user_id in existing_employee_ids:
                 error_message = f"Employee with ID '{user_id}' already exists."
-                return JsonResponse({"message": error_message}, status=400)
+                return JsonResponse({"error": error_message}, status=400)
 
             employee = ET.Element("employee")
             employee.set("id", request.POST["id"])
@@ -152,7 +154,19 @@ class EmployeeAdd(View):
             file_path = f'app_xml/static/xml/user_data-{current_time}.xml'
             tree.write(file_path)
             settings.XML_FILE_PATH = file_path
-            return redirect("/")
+            # return redirect("/")
+            return JsonResponse({"message": "success"})
         except Exception as e:
-            return e
-            # return JsonResponse({"error_message": str(e)}, status=500)
+            return JsonResponse({"error_message": str(e)}, status=500)
+
+
+def xml_list(request):
+
+    path = 'app_xml/static/xml'
+    xml_of_list = os.listdir(path)
+
+    paginator = Paginator(xml_of_list, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "xml_file_list.html", {"xml_of_list": xml_of_list,"page_obj": page_obj})
