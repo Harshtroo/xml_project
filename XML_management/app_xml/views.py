@@ -9,6 +9,7 @@ import glob
 import os
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from xmldiff import main, formatting
 
 
 def get_latest_file():
@@ -170,3 +171,73 @@ def xml_list(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "xml_file_list.html", {"xml_of_list": xml_of_list,"page_obj": page_obj})
+
+
+def compare_xml(request):
+
+    if request.method == 'POST':
+        file1 = request.POST.get('file1') 
+        file2 = request.POST.get('file2') 
+
+        tree1 = ET.parse(f'app_xml/static/xml/{file1}')
+        tree2 = ET.parse(f'app_xml/static/xml/{file2}')
+        diff = main.diff_files(f'app_xml/static/xml/{file1}', f'app_xml/static/xml/{file2}')
+        root = ET.Element('employees')
+
+        for change in diff:
+            print(change)
+            # for pair in change:
+            #     action, attributes = pair[0], pair[1]
+            # for action, attributes in change:
+            #     action_element = ET.SubElement(root, action)
+            #     for attr_name, attr_value in attributes.items():
+            #         attr_element = ET.SubElement(action_element, attr_name)
+            #         attr_element.text = attr_value
+            # tree = ET.ElementTree(root)
+        # diff_formatted = formatting.format_diff(diff, indent=4)
+
+        # Print the differences
+        # print(diff_formatted)
+
+
+        # root1 = tree1.getroot()
+        # root2 = tree2.getroot()
+    
+        # new_elements = compare_elements(root1, root2)
+        # print('---new_elements--',new_elements)
+        import pdb;pdb.set_trace()
+        return True
+
+
+    #     context = {
+    #         'tree1': root1,
+    #         'tree2': root2,
+    #         'new_elements': new_elements
+    #     }
+
+    #     return render(request, 'xml_file_list.html', context)
+
+    # return render(request, 'xml_file_list.html')
+
+def compare_elements(elem1, elem2):
+    if elem1.tag != elem2.tag:
+        print("Element tag differs: '{}' != '{}'".format(elem1.tag, elem2.tag))
+        return True
+
+    if elem1.text != elem2.text:
+        print("Element text differs: '{}' != '{}'".format(elem1.text, elem2.text))
+        return True
+
+    if elem1.attrib != elem2.attrib:
+        print("Element attributes differ: '{}' != '{}'".format(elem1.attrib, elem2.attrib))
+        return True
+
+    if len(elem1) != len(elem2):
+        print("Number of child elements differs: '{}' != '{}'".format(len(elem1), len(elem2)))
+        return True
+
+    for child1, child2 in zip(elem1, elem2):
+        if compare_elements(child1, child2):
+            return True
+
+    return False

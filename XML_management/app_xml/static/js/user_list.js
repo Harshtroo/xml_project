@@ -26,7 +26,6 @@ $(document).ready(function() {
                             $('.output').remove();
                           }, 3000);
                     }
-//                    debugger
             },
             error: function(data) {
                 var errorMessage = data.error;

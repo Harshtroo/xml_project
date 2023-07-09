@@ -8,4 +8,5 @@ urlpatterns = [
     path("delete_employee/<str:id>/", views.EmployeeDelete.as_view(), name="delete_employee"),
     path("add_employee/",views.EmployeeAdd.as_view(),name="add_employee"),
     path("xml_file_list/",views.xml_list,name="xml_file_list"),
+    path("compare_xml/",views.compare_xml,name="compare_xml"),
 ]
