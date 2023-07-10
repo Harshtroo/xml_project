@@ -173,6 +173,7 @@ def xml_list(request):
 
 
 def compare_xml(request):
+
     if request.method == 'POST':
         file1 = request.POST.get('file1')
         file2 = request.POST.get('file2')
@@ -203,7 +204,7 @@ def compare_xml(request):
 
         # new_elements = compare_elements(root1, root2)
         # print('---new_elements--',new_elements)
-        return render(request,"xml_file_list.html", {"diff":diff})
+        return JsonResponse({"diff":diff})
 
     #     context = {
     #         'tree1': root1,

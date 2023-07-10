@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<style>
+  .added-data {
+    color: green;
+  }
+</style>
+
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/xml_file_list.css' %}">
 <a type="button" class="btn btn-primary btn_edit" id="btn_compare" >compare</a>
@@ -50,26 +56,10 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel" align="center">hello</h5>
+          <h5 class="modal-title" id="staticBackdropLabel" align="center">hello</h5>
         </div>
-        <h2>XML File 1:</h2>
-        <ul>
-            {{diff}}
-
-            {% for element in tree1 %}
-              <li class="{% if element in new_elements %}new-element{% endif %}">
-                {{ element }}
-              </li>
-            {% endfor %}
-        </ul>
-        <h2>XML File 2:</h2>
-        <ul>
-            {% for element in tree2 %}
-              <li class="{% if element in new_elements %}new-element{% endif %}">
-                {{ element }}
-              </li>
-            {% endfor %}
-        </ul>
+        <div id="employeesContainer"></div>
+        
     
       </div>
     </div>
