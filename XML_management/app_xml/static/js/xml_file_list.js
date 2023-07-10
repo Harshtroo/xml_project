@@ -27,13 +27,17 @@ $("#btn_compare").on("click",function(){
             "file2":selectedValues[1]
         },
         success: function(data) {
+
             console.log("Inside Success")
         },
         error: function(data) {
             console.log("Inside Error")
         }
     });
-
 })
 
+
+$("#btn_compare").on("click",function() {
+    $("#comparexml").modal("show")
+})
 

@@ -6,7 +6,7 @@
 <a type="button" class="btn btn-primary btn_edit" id="btn_compare" >compare</a>
 
 <table class="table table-bordered" align="center">
-      <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" align="center">Employee Data</h3>
+      <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" align="center">Xml File List</h3>
      <thead>
       <tr class="table-dark">
           <th scope="col">No.</th>
@@ -52,10 +52,10 @@
         <div class="modal-header">
         <h5 class="modal-title" id="staticBackdropLabel" align="center">hello</h5>
         </div>
-        <h1>XML File List</h1>
-
         <h2>XML File 1:</h2>
         <ul>
+            {{diff}}
+
             {% for element in tree1 %}
               <li class="{% if element in new_elements %}new-element{% endif %}">
                 {{ element }}

@@ -10,3 +10,4 @@ sqlparse==0.4.4
 typing-extensions==4.7.1
 wheel==0.34.2
 xmltodict==0.13.0
+xmldiff==2.6.3
