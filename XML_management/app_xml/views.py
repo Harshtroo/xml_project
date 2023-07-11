@@ -9,8 +9,8 @@ import glob
 import os
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-from xmldiff import main, formatting
 import xmltodict
+from lxml import etree
 
 def get_latest_file():
     files = glob.glob(settings.XML_FILE_PATH)
@@ -173,68 +173,63 @@ def xml_list(request):
 
 
 def compare_xml(request):
-
+    print(request)
     if request.method == 'POST':
         file1 = request.POST.get('file1')
         file2 = request.POST.get('file2')
 
-        tree1 = ET.parse(f'app_xml/static/xml/{file1}')
-        tree2 = ET.parse(f'app_xml/static/xml/{file2}')
-        diff = main.diff_files(f'app_xml/static/xml/{file1}', f'app_xml/static/xml/{file2}',formatter=formatting.XMLFormatter())
-        root = ET.Element('employees')
-        print("diffff==========",diff)
-        # for change in diff:
-        #     print(change)
-            # for pair in change:
-            #     action, attributes = pair[0], pair[1]
-            # print("tree===========",tree)
-            # for action, attributes in change:
-            #     action_element = ET.SubElement(root, action)
-            #     for attr_name, attr_value in attributes.items():
-            #         attr_element = ET.SubElement(action_element, attr_name)
-            #         attr_element.text = attr_value
-            # tree = ET.ElementTree(root)
-        # diff_formatted = formatting(diff, indent=4)
+        file1_path = f'app_xml/static/xml/{file1}'
+        file2_path = f'app_xml/static/xml/{file2}'
+        # print("file1_path",file1_path)
+        with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+            f1_data = file1.readlines()
+            f2_data = file2.readlines()
+            # print("f2_data======",f2_data)
+            file1_content = file1.read()
+            # print("file1_content",file1_content)
+            file2_content = file2.read()
+            # print("file1_content",file2_content)
+            i = 0
+            
+            for line1 in f1_data:
+                i += 1
+                
+                for line2 in f2_data:
+                    
+                    # matching line1 from both files
+                    if line1 == line2: 
+                        # print IDENTICAL if similar
+                        print("Line ", i, ": IDENTICAL")
+                    else:
+                        # print("Line ", i, ":")
+                        # # else print that line from both files
+                        print("\tFile 1:", line1, end='')
+                        print("\tFile 2:", line2, end='')
+                        file1_data = line1
+                        file2_data = line2
+                        # print("file 1 data",file1_data)
+                        # print("file 2 data====",file2_data)
+                    break
 
-        # Print the differences
-        # print("diff_formatted=============00",diff_formatted)
+        print("******","\n".join(f2_data))
+        context = {
+            'file1_content': "\n".join(f1_data),
+            'file2_content': "\n".join(f2_data),
+        }
+        
+        # with open(file1_path) as f:
+        #     content = f.readlines()
+        #     print("content=============",content)
+        #     xml_file1 = f.write(xmlstr)
+        # print("xml_file1====",xml_file1)
+        # print("file1",file1_path,"file2",file2_path)
+        # breakpoint()
 
-        # root1 = tree1.getroot()
-        # root2 = tree2.getroot()
+        # tree1 = ET.parse(f'app_xml/static/xml/{file1}')
+        # tree2 = ET.parse(f'app_xml/static/xml/{file2}')
+        # diff = main.diff_files(f'app_xml/static/xml/{file1}', f'app_xml/static/xml/{file2}',formatter=formatting.XMLFormatter())
+        # root = ET.Element('employees')
+        # print("diffff==========",diff)
+        # print("context",context)
+        return JsonResponse(context)
 
-        # new_elements = compare_elements(root1, root2)
-        # print('---new_elements--',new_elements)
-        return JsonResponse({"diff":diff})
-
-    #     context = {
-    #         'tree1': root1,
-    #         'tree2': root2,
-    #         'new_elements': new_elements
-    #     }
-
-    #     return render(request, 'xml_file_list.html', context)
-
-    # return render(request, 'xml_file_list.html')
-
-    # def compare_elements(elem1, elem2):
-    #     if elem1.tag != elem2.tag:
-    #         print("Element tag differs: '{}' != '{}'".format(elem1.tag, elem2.tag))
-    #         return True
-    #
-    #     if elem1.text != elem2.text:
-    #         print("Element text differs: '{}' != '{}'".format(elem1.text, elem2.text))
-    #         return True
-    #
-    #     if elem1.attrib != elem2.attrib:
-    #         print("Element attributes differ: '{}' != '{}'".format(elem1.attrib, elem2.attrib))
-    #         return True
-    #
-    #     if len(elem1) != len(elem2):
-    #         print("Number of child elements differs: '{}' != '{}'".format(len(elem1), len(elem2)))
-    #         return True
-    #
-    #     for child1, child2 in zip(elem1, elem2):
-    #         if compare_elements(child1, child2):
-    #             return True
-    #
-    #     return False

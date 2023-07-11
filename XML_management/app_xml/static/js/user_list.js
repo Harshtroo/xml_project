@@ -16,6 +16,7 @@ $(document).ready(function() {
             type: "POST",
             data: $(this).serialize(),
             success: function(data) {
+
                     window.location.href = employeeRedirectURL;
                     console.log("message======",data.message)
                     if(data.message){

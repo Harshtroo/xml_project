@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>File Comparison</h1>
+
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            <h2>File 1</h2>
+            <pre id="file1_data">{{ file1_content }}</pre>
+        </div>
+        <div style="flex: 1;">
+            <h2>File 2</h2>
+            <pre id="file2_data">{{ file2_content }}</pre>
+        </div>
+    </div>
+
+
+
+{% endblock %}
