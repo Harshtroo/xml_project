@@ -31,97 +31,76 @@ $("#btn_compare").on("click", function () {
       "file2": selectedValues[1]
     },
     success: function (data) {
-      console.log("Inside Success")
-      console.log("file1====", data.file1_content, "file2======", data.file2_content)
-      $("#comparexml").modal("show")
-      $("#file1_data").text(data.file1_content)
-      $("#file2_data").text(data.file2_content)
+        console.log("Inside Success")
+        // console.log("file1====", data.file1_content, "file2======", data.file2_content)
+        $("#comparexml").modal("show")
+        $("#file1_data").text(data.file1_content)
+        $("#file2_data").text(data.file2_content)
 
-//      outputDataOld = ""
-//      outputDataNew = ""
-//
-//      var oldList = " "
-//      var newList = " "
-//
-//      firstIdValues = data.file1_content
-//      secondIdValues = data.file2_content
-//      for (let i = 1; i < firstIdValues.length; i++) {
-//        if (firstIdValues[i] == secondIdValues[i]) {
-//          if (firstIdValues[i] == secondIdValues[i]) {
-//            outputDataOld += `${firstIdValues[i]}`
-//            outputDataNew += `${secondIdValues[i]}`
-//          }
-//          else {
-//            if (firstIdValues[i].toLowerCase() == secondIdValues[i].toLowerCase()) {
-//              console.log("string match but cases does not match")
-//              for (j = 0; j < firstIdValues[i].length; j++) {
-//                if (firstIdValues[i][j] == secondIdValues[i][j]) {
-//                  oldList += firstIdValues[i][j]
-//                  newList += secondIdValues[i][j]
-//                }
-//                else {
-//                  oldList += `${firstIdValues[i][j]}`
-//                  newList += `${secondIdValues[i][j]}`
-//                }
-//              }
-//              outputDataOld += oldList
-//              outputDataNew += newList
-//              oldList = " "
-//              newList = " "
-//            }
-//            else {
-//              outputDataOld += `${firstIdValues[i]}`
-//              outputDataNew += `${secondIdValues[i]}`
-//            }
-//          }
-//        }
-//        else {
-//          outputDataOld += `${firstIdValues[i]}`
-//          outputDataNew += `${secondIdValues[i]}`
-//        }
-//      }
-//      $("#file1_data").append(outputDataOld);
-//      $("#file2_data").append(outputDataNew);
-//
+        var parser = new DOMParser();
+        var xmlDoc1 = parser.parseFromString(data.file1_content, "text/xml");
+        var xmlDoc2 = parser.parseFromString(data.file2_content, "text/xml");
 
-    },
+        var differences = compareXMLNodes(xmlDoc1.documentElement, xmlDoc2.documentElement);
+        console.log("?????????????????????????",differences)
+        highlightChanges(differences);
+    
+},
+
     error: function (data) {
       console.log("Inside Error")
-    }
+        }
   });
 })
 
-//function formatXml(xml) {
-//    let formattedXml = "";
-//    const reg = /(>)(<)(\/*)/g;
-//    xml = xml.replace(reg, "$1\n$2$3");
-//    const pad = 2;
-//
-//    xml.split("\n").forEach(function(node) {
-//      let indent = 0;
-//      if (node.match(/.+<\/\w[^>]*>$/)) {
-//        indent = 0;
-//      } else if (node.match(/^<\/\w/)) {
-//        if (indent !== 0) {
-//          indent -= pad;
-//        }
-//      } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
-//        indent += pad;
-//      } else {
-//        indent = 0;
-//      }
-//
-//      let padding = "";
-//      for (let i = 0; i < indent; i++) {
-//        padding += " ";
-//      }
-//
-//      formattedXml += padding + node + "\n";
-//    });
-//
-//    return formattedXml;
-//  }
 
 
 
+function compareXMLNodes(node1, node2) {
+    // Compare the nodes and return the differences
+    // You can implement your own comparison logic here
+    // For simplicity, this example assumes the XML structure is similar
+    // and only compares the node names and values
+  
+    var differences = [];
+  
+    if (node1.nodeName !== node2.nodeName) {
+      differences.push({
+        type: "deleted",
+        node: node1
+      });
+      differences.push({
+        type: "added",
+        node: node2
+      });
+    } else if (node1.nodeValue !== node2.nodeValue) {
+      differences.push({
+        type: "modified",
+        node: node1
+      });
+      differences.push({
+        type: "modified",
+        node: node2
+      });
+    }
+    return differences;
+}
 
+function highlightChanges(differences) {
+    // Modify the HTML representation of the XML files to highlight changes
+    // This example assumes the XML files are displayed in <pre> elements
+    // with IDs "file1_data" and "file2_data"
+  
+    var file1Data = $("#file1_data");
+    var file2Data = $("#file2_data");
+  
+    differences.forEach(function (difference) {
+      var node = difference.node;
+  
+      if (difference.type === "added") {
+        $(node).css("color", "green");
+    } else if (difference.type === "deleted") {
+        $(node).css("color", "red");
+      }
+    });
+  } 
