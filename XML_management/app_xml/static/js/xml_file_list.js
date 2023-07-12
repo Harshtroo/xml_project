@@ -2,9 +2,19 @@ $("#btn_compare").on("click", function () {
   $("#comparexml").modal("show")
 })
 
+$(".btn-close").on("click",function() {
+   location.reload();
+   $("#comparexml").modal("hide")
+})
+
 $(document).ready(function () {
   $(".check_select").change(function () {
     var checkboxcount = $(".check_select:checked").length;
+
+    if (checkboxcount == 0){
+        $("#btn_compare").prop('disabled', true)
+    }
+
 
     if (checkboxcount == 2) {
       $(':checkbox:not(:checked)').prop('disabled', true);
@@ -15,7 +25,7 @@ $(document).ready(function () {
   })
 })
 
-
+//
 $("#btn_compare").on("click", function () {
   console.log("Button clicked")
   var selectedValues = $('input[name="xmlFile"]:checked').map(function () {
@@ -32,75 +42,61 @@ $("#btn_compare").on("click", function () {
     },
     success: function (data) {
         console.log("Inside Success")
-        // console.log("file1====", data.file1_content, "file2======", data.file2_content)
+        console.log("file1====", data.file1_data)
+        file1 = data.file1_data
+        file2 = data.file2_data
         $("#comparexml").modal("show")
-        $("#file1_data").text(data.file1_content)
-        $("#file2_data").text(data.file2_content)
 
-        var parser = new DOMParser();
-        var xmlDoc1 = parser.parseFromString(data.file1_content, "text/xml");
-        var xmlDoc2 = parser.parseFromString(data.file2_content, "text/xml");
+        var table1_val = document.getElementById('file1_table').getElementsByTagName('tbody')[0]
+        file1.forEach((file_data,index) => {
+               table1_val.innerHTML += `<tr>
+                                    <td>${index}</td>
+                                    <td>${file_data.id}</td>
+                                    <td>${file_data.firstname}</td>
+                                    <td>${file_data.lastname}</td>
+                                    <td>${file_data.title}</td>
+                                    <td>${file_data.division}</td>
+                                    <td>${file_data.building}</td>
+                                    <td>${file_data.room}</td>
+                                    </tr>`
+               })
 
-        var differences = compareXMLNodes(xmlDoc1.documentElement, xmlDoc2.documentElement);
-        console.log("?????????????????????????",differences)
-        highlightChanges(differences);
-    
-},
+        var table2_val = document.getElementById('file2_table').getElementsByTagName('tbody')[0]
+
+        file2.forEach((file_data,index) => {
+               i=1
+               table2_val.innerHTML += `<tr>
+                                    <td>${index}</td>
+                                    <td>${file_data.id}</td>
+                                    <td>${file_data.firstname}</td>
+                                    <td>${file_data.lastname}</td>
+                                    <td>${file_data.title}</td>
+                                    <td>${file_data.division}</td>
+                                    <td>${file_data.building}</td>
+                                    <td>${file_data.room}</td>
+                                    </tr>`
+
+               })
+
+        const firstTable = document.querySelectorAll("#file1_table td")
+        const secondTable = document.querySelectorAll("#file2_table td");
+
+        for (let i=0; i< firstTable.length; i++){
+                console.log("ftable==============",firstTable[i].textContent)
+            if (firstTable[i].textContent !== secondTable[i].textContent) {
+                console.log("++++++++++++++++++++++=",firstTable[i].textContent !== secondTable[i].textContent)
+                firstTable[i].classList.add('redbg');// here do what you need to when not equal
+                console.log("???????????????????///",firstTable[i].classList.add('redbg'))
+          }
+        }
+
+
+
+        },
 
     error: function (data) {
       console.log("Inside Error")
         }
-  });
+    })
 })
 
-
-
-
-function compareXMLNodes(node1, node2) {
-    // Compare the nodes and return the differences
-    // You can implement your own comparison logic here
-    // For simplicity, this example assumes the XML structure is similar
-    // and only compares the node names and values
-  
-    var differences = [];
-  
-    if (node1.nodeName !== node2.nodeName) {
-      differences.push({
-        type: "deleted",
-        node: node1
-      });
-      differences.push({
-        type: "added",
-        node: node2
-      });
-    } else if (node1.nodeValue !== node2.nodeValue) {
-      differences.push({
-        type: "modified",
-        node: node1
-      });
-      differences.push({
-        type: "modified",
-        node: node2
-      });
-    }
-    return differences;
-}
-
-function highlightChanges(differences) {
-    // Modify the HTML representation of the XML files to highlight changes
-    // This example assumes the XML files are displayed in <pre> elements
-    // with IDs "file1_data" and "file2_data"
-  
-    var file1Data = $("#file1_data");
-    var file2Data = $("#file2_data");
-  
-    differences.forEach(function (difference) {
-      var node = difference.node;
-  
-      if (difference.type === "added") {
-        $(node).css("color", "green");
-    } else if (difference.type === "deleted") {
-        $(node).css("color", "red");
-      }
-    });
-  } 

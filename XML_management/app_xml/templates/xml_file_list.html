@@ -1,15 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<style>
-  .added-data {
-    color: green;
-  }
-</style>
 
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/xml_file_list.css' %}">
-<a type="button" class="btn btn-primary btn_edit" id="btn_compare" >compare</a>
+<a type="button" class="btn btn-primary btn_edit" id="btn_compare"  >compare</a>
 
 <table class="table table-bordered" align="center">
       <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" align="center">Xml File List</h3>
@@ -52,24 +47,58 @@
 
 
 <!-- Click on compare button and show this modal -->
-  <div class="modal fade" tabindex="-1" id="comparexml" role="dialog"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+  <div class="modal fade bd-example-modal-lg" tabindex="-1" id="comparexml" role="dialog"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel" align="center">hello</h5>
+            <h5 class="modal-title" id="staticBackdropLabel" align="center">File Comparison</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-         <h1>File Comparison</h1>
 
-                <div style="display: flex;">
-                    <div style="flex: 1;">
-                        <h2>File 1</h2>
-                        <div id="file1_data">{{file1_content}}</div>
-                    </div>
-                    <div style="flex: 1;">
-                        <h2>File 2</h2>
-                        <div id="file2_data"></div>
-                    </div>
-                </div>
+          <div class="row">
+              <div class="col-6">
+            <table class="table table-bordered " align="center" id="file1_table">
+                <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" >file 1</h3>
+                <thead>
+                  <tr class="table-dark">
+                      <th>No.</th>
+                      <th scope="col">Id</th>
+                      <th scope="col">First name</th>
+                      <th scope="col">Last name</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Division</th>
+                      <th scope="col">Building No.</th>
+                      <th scope="col">Room</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+
+                </tbody>
+            </table>
+            </div>
+              <div class="col-6 tab2">
+              <table class="table table-bordered  " align="center" id="file2_table">
+                    <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" >file 2</h3>
+                    <thead>
+                      <tr class="table-dark">
+                          <th>No.</th>
+                          <th scope="col">Id</th>
+                          <th scope="col">First name</th>
+                          <th scope="col">Last name</th>
+                          <th scope="col">Title</th>
+                          <th scope="col">Division</th>
+                          <th scope="col">Building No.</th>
+                          <th scope="col">Room</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+              </div>
+            </div>
       </div>
     </div>
   </div>

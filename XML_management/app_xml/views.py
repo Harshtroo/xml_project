@@ -10,16 +10,15 @@ import os
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 import xmltodict
-from lxml import etree
+
 
 def get_latest_file():
     files = glob.glob(settings.XML_FILE_PATH)
     return max(files, key=os.path.getctime)
 
 
-def show_xml_file(request):
-    latest_file_path = get_latest_file()
-    with open(latest_file_path,"r", encoding="utf-8") as file:
+def read_file_data(request, file_name):
+    with open(file_name, "r", encoding="utf-8") as file:
         try:
             user_xml = file.read()
 
@@ -29,9 +28,16 @@ def show_xml_file(request):
             for value in user_data["employee"]:
                 value["id"] = value["@id"]
                 del value["@id"]
-            return render(request,"user_list.html", {"user_data": user_data["employee"]})
+            return user_data["employee"]
+
         except Exception as e:
-            return JsonResponse({"error_message": str(e)}, status=500)
+            return JsonResponse({"error_message": str(e)}, status=400)
+
+
+def show_xml_file(request):
+    latest_file_path = get_latest_file()
+    file_data = read_file_data(request, latest_file_path)
+    return render(request, "user_list.html", {"user_data": file_data})
 
 
 class EmployeeEdit(View):
@@ -53,10 +59,10 @@ class EmployeeEdit(View):
                                                 "title": value.get("title"),
                                                 "division": value.get("division"),
                                                 "building": value.get("building"),
-                                                "room": value.get("room"),}
-                return render(request,self.template_name,{"select_employee_data": select_employee_data})
+                                                "room": value.get("room"), }
+                return render(request, self.template_name, {"select_employee_data": select_employee_data})
             except Exception as e:
-                return JsonResponse({"error_message": str(e)}, status=500)
+                return JsonResponse({"error_message": str(e)}, status=400)
 
     def post(self, request, *args, **kwargs):
         latest_file_path = get_latest_file()
@@ -97,7 +103,7 @@ class EmployeeDelete(View):
             for country in root.findall('employee'):
                 val_to_delete = country.attrib['id']
                 if val_to_delete == user_id:
-                     root.remove(country)
+                    root.remove(country)
             current_time = datetime.now().strftime("%Y_%m_%d-%I-%M-%S")
             file_path = f'app_xml/static/xml/user_data-{current_time}.xml'
             tree.write(file_path)
@@ -105,7 +111,7 @@ class EmployeeDelete(View):
             return redirect("/")
         # return JsonResponse({"messages": "success"})
         except Exception as e:
-            return JsonResponse({"error_message": str(e)}, status=500)
+            return JsonResponse({"error_message": str(e)}, status=400)
 
 
 class EmployeeAdd(View):
@@ -157,11 +163,10 @@ class EmployeeAdd(View):
             # return redirect("/")
             return JsonResponse({"message": "success"})
         except Exception as e:
-            return JsonResponse({"error_message": str(e)}, status=500)
+            return JsonResponse({"error_message": str(e)}, status=400)
 
 
 def xml_list(request):
-
     path = 'app_xml/static/xml'
     xml_of_list = os.listdir(path)
 
@@ -169,67 +174,70 @@ def xml_list(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, "xml_file_list.html", {"xml_of_list": xml_of_list,"page_obj": page_obj})
+    return render(request, "xml_file_list.html", {"xml_of_list": xml_of_list, "page_obj": page_obj})
 
 
 def compare_xml(request):
-    print(request)
     if request.method == 'POST':
         file1 = request.POST.get('file1')
         file2 = request.POST.get('file2')
 
         file1_path = f'app_xml/static/xml/{file1}'
         file2_path = f'app_xml/static/xml/{file2}'
-        # print("file1_path",file1_path)
+
         with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
-            f1_data = file1.readlines()
-            f2_data = file2.readlines()
-            # print("f2_data======",f2_data)
-            file1_content = file1.read()
-            # print("file1_content",file1_content)
-            file2_content = file2.read()
-            # print("file1_content",file2_content)
-            i = 0
-            
-            for line1 in f1_data:
-                i += 1
-                
-                for line2 in f2_data:
-                    
-                    # matching line1 from both files
-                    if line1 == line2: 
-                        # print IDENTICAL if similar
-                        print("Line ", i, ": IDENTICAL")
-                    else:
-                        # print("Line ", i, ":")
-                        # # else print that line from both files
-                        print("\tFile 1:", line1, end='')
-                        print("\tFile 2:", line2, end='')
-                        file1_data = line1
-                        file2_data = line2
-                        # print("file 1 data",file1_data)
-                        # print("file 2 data====",file2_data)
-                    break
 
-        print("******","\n".join(f2_data))
-        context = {
-            'file1_content': "\n".join(f1_data),
-            'file2_content': "\n".join(f2_data),
-        }
-        
-        # with open(file1_path) as f:
-        #     content = f.readlines()
-        #     print("content=============",content)
-        #     xml_file1 = f.write(xmlstr)
-        # print("xml_file1====",xml_file1)
-        # print("file1",file1_path,"file2",file2_path)
-        # breakpoint()
+            file1_read = file1.read()
+            file2_read = file2.read()
 
-        # tree1 = ET.parse(f'app_xml/static/xml/{file1}')
-        # tree2 = ET.parse(f'app_xml/static/xml/{file2}')
-        # diff = main.diff_files(f'app_xml/static/xml/{file1}', f'app_xml/static/xml/{file2}',formatter=formatting.XMLFormatter())
-        # root = ET.Element('employees')
-        # print("diffff==========",diff)
-        # print("context",context)
+            file1_dict = xmltodict.parse(file1_read)
+            file2_dict = xmltodict.parse(file2_read)
+
+            file1_data = file1_dict["employees"]
+            file2_data = file2_dict["employees"]
+
+            for value in file1_data["employee"]:
+                value["id"] = value["@id"]
+                del value["@id"]
+
+            for value in file2_data["employee"]:
+                value["id"] = value["@id"]
+                del value["@id"]
+
+            context = {
+                "file1_data": file1_data["employee"],
+                "file2_data": file2_data["employee"],
+            }
         return JsonResponse(context)
+        # context = {}
+        # with open(file1_path, "r", encoding="utf-8") as file:
+        #     try:
+        #         user_xml = file.read()
+        #
+        #         user_dict = xmltodict.parse(user_xml)
+        #         user_data = user_dict["employees"]
+        #
+        #         for value in user_data["employee"]:
+        #             value["id"] = value["@id"]
+        #             del value["@id"]
+        #         context = user_data["employee"]
+        #     except Exception as e:
+        #         return JsonResponse({"error_message": str(e)}, status=400)
+        #
+        #     with open(file2_path, "r", encoding="utf-8") as file:
+        #         try:
+        #             user_xml = file.read()
+        #
+        #             user_dict = xmltodict.parse(user_xml)
+        #             user_data = user_dict["employees"]
+        #
+        #             for value in user_data["employee"]:
+        #                 value["id"] = value["@id"]
+        #                 del value["@id"]
+        #             context.update(user_data["employee"])
+        #         except Exception as e:
+        #             return JsonResponse({"error_message": str(e)}, status=400)
 
+        # return render(request, "user_list.html", {"user_data": user_data["employee"]})
+
+        # return render(request,"compare_xml.html",context)
