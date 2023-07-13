@@ -9,14 +9,15 @@ $(".btn-close").on("click",function() {
 
 $(document).ready(function () {
   $(".check_select").change(function () {
-    var checkboxcount = $(".check_select:checked").length;
-
-    if (checkboxcount == 0){
+    var checkboxCount = $(".check_select:checked").length;
+       console.log("checkboxcount?????????????/**/",checkboxCount)
+    if (checkboxCount == 0){
         $("#btn_compare").prop('disabled', true)
+    }else{
+        $("#btn_compare").prop('disabled', false)
     }
 
-
-    if (checkboxcount == 2) {
+    if (checkboxCount == 2) {
       $(':checkbox:not(:checked)').prop('disabled', true);
     }
     else {
@@ -27,11 +28,9 @@ $(document).ready(function () {
 
 //
 $("#btn_compare").on("click", function () {
-  console.log("Button clicked")
   var selectedValues = $('input[name="xmlFile"]:checked').map(function () {
     return $(this).attr('fileName');
   }).get();
-  console.log("Before AJAX")
   $.ajax({
     url: "/compare_xml/",
     type: "POST",
@@ -41,57 +40,68 @@ $("#btn_compare").on("click", function () {
       "file2": selectedValues[1]
     },
     success: function (data) {
-        console.log("Inside Success")
-        console.log("file1====", data.file1_data)
-        file1 = data.file1_data
-        file2 = data.file2_data
-        $("#comparexml").modal("show")
+        var insertions = data.insertions
+        var updates = data.updates
+        var deletions = data.deletions
 
-        var table1_val = document.getElementById('file1_table').getElementsByTagName('tbody')[0]
-        file1.forEach((file_data,index) => {
-               table1_val.innerHTML += `<tr>
-                                    <td>${index}</td>
-                                    <td>${file_data.id}</td>
-                                    <td>${file_data.firstname}</td>
-                                    <td>${file_data.lastname}</td>
-                                    <td>${file_data.title}</td>
-                                    <td>${file_data.division}</td>
-                                    <td>${file_data.building}</td>
-                                    <td>${file_data.room}</td>
-                                    </tr>`
-               })
+        var file1 = data.file1_data;
+        var file2 = data.file2_data;
 
-        var table2_val = document.getElementById('file2_table').getElementsByTagName('tbody')[0]
+        $("#comparexml").modal("show");
 
-        file2.forEach((file_data,index) => {
-               i=1
-               table2_val.innerHTML += `<tr>
-                                    <td>${index}</td>
-                                    <td>${file_data.id}</td>
-                                    <td>${file_data.firstname}</td>
-                                    <td>${file_data.lastname}</td>
-                                    <td>${file_data.title}</td>
-                                    <td>${file_data.division}</td>
-                                    <td>${file_data.building}</td>
-                                    <td>${file_data.room}</td>
-                                    </tr>`
+        var table1_val = document.getElementById('file1_table').getElementsByTagName('tbody')[0];
+        file1.forEach((file_data, index) => {
+          var row = table1_val.insertRow();
+          row.innerHTML =`<tr>
+            <td>${index}</td>
+            <td>${file_data.id}</td>
+            <td>${file_data.firstname}</td>
+            <td>${file_data.lastname}</td>
+            <td>${file_data.title}</td>
+            <td>${file_data.division}</td>
+            <td>${file_data.building}</td>
+            <td>${file_data.room}</td>;
+            </tr>`
 
-               })
-
-        const firstTable = document.querySelectorAll("#file1_table td")
-        const secondTable = document.querySelectorAll("#file2_table td");
-
-        for (let i=0; i< firstTable.length; i++){
-                console.log("ftable==============",firstTable[i].textContent)
-            if (firstTable[i].textContent !== secondTable[i].textContent) {
-                console.log("++++++++++++++++++++++=",firstTable[i].textContent !== secondTable[i].textContent)
-                firstTable[i].classList.add('redbg');// here do what you need to when not equal
-                console.log("???????????????????///",firstTable[i].classList.add('redbg'))
+          var isInsertion = insertions.some((insertion) => insertion.id === file_data.id);
+          if (isInsertion) {
+            row.style.backgroundColor = 'green';
+          } else {
+            var isDeletion = deletions.some((deletion) => deletion.id === file_data.id);
+            var isUpdate = updates.some((update) => update.id === file_data.id);
+            if (isDeletion) {
+              row.style.backgroundColor = 'red';
+            }
           }
-        }
+        });
 
+        var table2_val = document.getElementById('file2_table').getElementsByTagName('tbody')[0];
+        file2.forEach((file_data, index) => {
+          var row = table2_val.insertRow();
+          row.innerHTML = `<tr>
+            <td>${index}</td>
+            <td>${file_data.id}</td>
+            <td>${file_data.firstname}</td>
+            <td>${file_data.lastname}</td>
+            <td>${file_data.title}</td>
+            <td>${file_data.division}</td>
+            <td>${file_data.building}</td>
+            <td>${file_data.room}</td>;
+            </tr>`
 
-
+          var isInsertion = insertions.some((insertion) => insertion.id === file_data.id);
+          if (isInsertion) {
+            row.style.backgroundColor = '#99ff99';
+          } else {
+            var isDeletion = deletions.some((deletion) => deletion.id === file_data.id);
+            var isUpdate = updates.some((update) => update.id === file_data.id);
+            if (isDeletion) {
+              row.style.backgroundColor = 'red';
+            } else if (isUpdate) {
+              row.style.backgroundColor = '#e5e500';
+            }
+          }
+        });
         },
 
     error: function (data) {

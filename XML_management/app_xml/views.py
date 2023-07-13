@@ -204,40 +204,63 @@ def compare_xml(request):
                 value["id"] = value["@id"]
                 del value["@id"]
 
+            tree1 = ET.parse(file1_path)
+            root1 = tree1.getroot()
+
+            tree2 = ET.parse(file2_path)
+            root2 = tree2.getroot()
+
+            file1_dict_data = []
+            file2_dict_data = []
+
+            # get file 1 dict data
+            for key,value in file1_dict.items():
+                for key1,value1 in value.items():
+                    for nodes in value1:
+                        file1_dict_data.append(nodes)
+
+            # get file 2 dict data
+            for key,value in file2_dict.items():
+                for key1,value1 in value.items():
+                    for nodes in value1:
+                        file2_dict_data.append(nodes)
+
+            insertions = []
+            updates = []
+            deletions = []
+
+            dict1 = {idx: dict_item for idx, dict_item in enumerate(file1_dict_data)}
+            dict2 = {idx: dict_item for idx, dict_item in enumerate(file2_dict_data)}
+
+            for key, value in dict2.items():
+                if key not in dict1:
+                    insertions.append(value)
+                else:
+                    dict1_value = dict1[key]
+
+                    if value != dict1_value:
+                        updates.append(value)
+
+            for key, value in dict1.items():
+                if key not in dict2:
+                    deletions.append(value)
+
+            insertions = [d for d in insertions if d not in deletions]
+            deletions = [d for d in deletions if d not in insertions]
+
             context = {
                 "file1_data": file1_data["employee"],
                 "file2_data": file2_data["employee"],
+                "updates": updates,
+                "deletions": deletions,
+                "insertions": insertions,
             }
         return JsonResponse(context)
-        # context = {}
-        # with open(file1_path, "r", encoding="utf-8") as file:
-        #     try:
-        #         user_xml = file.read()
-        #
-        #         user_dict = xmltodict.parse(user_xml)
-        #         user_data = user_dict["employees"]
-        #
-        #         for value in user_data["employee"]:
-        #             value["id"] = value["@id"]
-        #             del value["@id"]
-        #         context = user_data["employee"]
-        #     except Exception as e:
-        #         return JsonResponse({"error_message": str(e)}, status=400)
-        #
-        #     with open(file2_path, "r", encoding="utf-8") as file:
-        #         try:
-        #             user_xml = file.read()
-        #
-        #             user_dict = xmltodict.parse(user_xml)
-        #             user_data = user_dict["employees"]
-        #
-        #             for value in user_data["employee"]:
-        #                 value["id"] = value["@id"]
-        #                 del value["@id"]
-        #             context.update(user_data["employee"])
-        #         except Exception as e:
-        #             return JsonResponse({"error_message": str(e)}, status=400)
 
-        # return render(request, "user_list.html", {"user_data": user_data["employee"]})
 
-        # return render(request,"compare_xml.html",context)
+
+
+
+
+
+
