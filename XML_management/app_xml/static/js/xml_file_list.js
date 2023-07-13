@@ -11,11 +11,12 @@ $(document).ready(function () {
   $(".check_select").change(function () {
     var checkboxCount = $(".check_select:checked").length;
        console.log("checkboxcount?????????????/**/",checkboxCount)
-    if (checkboxCount == 0){
-        $("#btn_compare").prop('disabled', true)
-    }else{
-        $("#btn_compare").prop('disabled', false)
-    }
+   
+      if (checkboxCount <= 1) {
+        $("#btn_compare").prop('disabled', true);
+      } else {
+        $("#btn_compare").prop('disabled', false);
+      }
 
     if (checkboxCount == 2) {
       $(':checkbox:not(:checked)').prop('disabled', true);
