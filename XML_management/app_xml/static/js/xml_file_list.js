@@ -10,8 +10,7 @@ $(".btn-close").on("click",function() {
 $(document).ready(function () {
   $(".check_select").change(function () {
     var checkboxCount = $(".check_select:checked").length;
-       console.log("checkboxcount?????????????/**/",checkboxCount)
-   
+
       if (checkboxCount <= 1) {
         $("#btn_compare").prop('disabled', true);
       } else {
@@ -96,10 +95,35 @@ $("#btn_compare").on("click", function () {
           } else {
             var isDeletion = deletions.some((deletion) => deletion.id === file_data.id);
             var isUpdate = updates.some((update) => update.id === file_data.id);
+//            console.log("isupdaqte==================",updates)
             if (isDeletion) {
               row.style.backgroundColor = 'red';
             } else if (isUpdate) {
               row.style.backgroundColor = '#e5e500';
+
+              console.log("row=====",file_data.id)
+
+              for(var i=0; i< file1.length;i++){
+//                for (var i=0; i<updates.length; i++){
+//                    console.log("LLLLLLLLLLLLLLLLLLLLLLLLLL",updates[i])
+//                }
+                console.log("hello=======",file1[i])
+                console.log("update========",updates)
+                    if( file1[i] === updates){
+
+                        console.log("he========",file1[i]=== updates)
+                    }
+//                    console.log("new=====",updates)
+//                    console.log("old=====",file1[i])
+              }
+//             function findDictById(row,file1){
+//                return file1.find(function(dict){
+//                    return dict.id === row
+//                })
+//             }
+//             var dictionary = findDictById(row,file1)
+//
+//             console.log('Dictionary found:', dictionary);
             }
           }
         });

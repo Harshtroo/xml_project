@@ -204,11 +204,11 @@ def compare_xml(request):
                 value["id"] = value["@id"]
                 del value["@id"]
 
-            tree1 = ET.parse(file1_path)
-            root1 = tree1.getroot()
-
-            tree2 = ET.parse(file2_path)
-            root2 = tree2.getroot()
+            # tree1 = ET.parse(file1_path)
+            # root1 = tree1.getroot()
+            #
+            # tree2 = ET.parse(file2_path)
+            # root2 = tree2.getroot()
 
             file1_dict_data = []
             file2_dict_data = []
@@ -237,17 +237,21 @@ def compare_xml(request):
                     insertions.append(value)
                 else:
                     dict1_value = dict1[key]
-
                     if value != dict1_value:
+                        # for key in dict1_value:
+                        #     if key in value and dict1_value[key] != value[key]:
+                        #         different_pairs = value[key]
+                        #         # print("id=====",value["id"])
+                        #         print("<<<<<<<<<<<<<<",different_pairs + value["id"])
+                        #         updates.append(different_pairs)
+                        #         updates.append(value["id"])
                         updates.append(value)
-
             for key, value in dict1.items():
                 if key not in dict2:
                     deletions.append(value)
 
             insertions = [d for d in insertions if d not in deletions]
             deletions = [d for d in deletions if d not in insertions]
-
             context = {
                 "file1_data": file1_data["employee"],
                 "file2_data": file2_data["employee"],
