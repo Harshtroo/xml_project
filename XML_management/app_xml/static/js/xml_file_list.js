@@ -99,31 +99,38 @@ $("#btn_compare").on("click", function () {
             if (isDeletion) {
               row.style.backgroundColor = 'red';
             } else if (isUpdate) {
-              row.style.backgroundColor = '#e5e500';
+              // var cellIndex = -1
+              // row.style.backgroundColor = '#e5e500';
+              const updateKeys = Object.keys(updates).filter(key => !file1.hasOwnProperty(key));
 
-              console.log("row=====",file_data.id)
+              // Find keys in file1 object that are not in updates
+              const file1Keys = Object.keys(file1).filter(key => !updates.hasOwnProperty(key));
 
-              for(var i=0; i< file1.length;i++){
-//                for (var i=0; i<updates.length; i++){
-//                    console.log("LLLLLLLLLLLLLLLLLLLLLLLLLL",updates[i])
-//                }
-                console.log("hello=======",file1[i])
-                console.log("update========",updates)
-                    if( file1[i] === updates){
-
-                        console.log("he========",file1[i]=== updates)
-                    }
-//                    console.log("new=====",updates)
-//                    console.log("old=====",file1[i])
+              const differentValues = Object.entries(updates).reduce((result, [key, value]) => {
+                if (file1.hasOwnProperty(key) && file1[key] !== value) {
+                  result[key] = {
+                    oldValue: file1[key],
+                    newValue: value
+                  };
+                }
+                return result;
+              }, {});
+              const table = document.getElementById("file2_table");
+              const updatedValues = [];
+              for (let i = 0; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                const cellKey = row.cells[0].textContent; // Assuming the key is in the first cell
+              
+                if (differentValues.hasOwnProperty(cellKey)) {
+                  const cellNewValue = row.cells[i]; // Assuming the new value is in the second cell
+                  const newValue = cellNewValue.textContent;
+              
+                  updatedValues.push(newValue);
+                  
+                  cellNewValue.style.backgroundColor = "yellow";
+                }
               }
-//             function findDictById(row,file1){
-//                return file1.find(function(dict){
-//                    return dict.id === row
-//                })
-//             }
-//             var dictionary = findDictById(row,file1)
-//
-//             console.log('Dictionary found:', dictionary);
+              console.log("updated val================================",updatedValues)
             }
           }
         });
