@@ -26,7 +26,7 @@ $(document).ready(function () {
   })
 })
 
-//
+
 $("#btn_compare").on("click", function () {
   var selectedValues = $('input[name="xmlFile"]:checked').map(function () {
     return $(this).attr('fileName');
@@ -78,15 +78,15 @@ $("#btn_compare").on("click", function () {
         var table2_val = document.getElementById('file2_table').getElementsByTagName('tbody')[0];
         file2.forEach((file_data, index) => {
           var row = table2_val.insertRow();
-          row.innerHTML = `<tr>
+          row.innerHTML = `<tr class="yellowText">
             <td>${index}</td>
-            <td>${file_data.id}</td>
-            <td>${file_data.firstname}</td>
-            <td>${file_data.lastname}</td>
-            <td>${file_data.title}</td>
-            <td>${file_data.division}</td>
-            <td>${file_data.building}</td>
-            <td>${file_data.room}</td>;
+            <td >${file_data.id}</td>
+            <td >${file_data.firstname}</td>
+            <td >${file_data.lastname}</td>
+            <td >${file_data.title}</td>
+            <td >${file_data.division}</td>
+            <td >${file_data.building}</td>
+            <td >${file_data.room}</td>;
             </tr>`
 
           var isInsertion = insertions.some((insertion) => insertion.id === file_data.id);
@@ -95,47 +95,34 @@ $("#btn_compare").on("click", function () {
           } else {
             var isDeletion = deletions.some((deletion) => deletion.id === file_data.id);
             var isUpdate = updates.some((update) => update.id === file_data.id);
-//            console.log("isupdaqte==================",updates)
             if (isDeletion) {
               row.style.backgroundColor = 'red';
             } else if (isUpdate) {
-              // var cellIndex = -1
-              // row.style.backgroundColor = '#e5e500';
+
               const updateKeys = Object.keys(updates).filter(key => !file1.hasOwnProperty(key));
 
-              // Find keys in file1 object that are not in updates
               const file1Keys = Object.keys(file1).filter(key => !updates.hasOwnProperty(key));
 
-              const differentValues = Object.entries(updates).reduce((result, [key, value]) => {
-                if (file1.hasOwnProperty(key) && file1[key] !== value) {
-                  result[key] = {
-                    oldValue: file1[key],
-                    newValue: value
-                  };
-                }
-                return result;
-              }, {});
-              const table = document.getElementById("file2_table");
-              const updatedValues = [];
-              for (let i = 0; i < table.rows.length; i++) {
-                const row = table.rows[i];
-                const cellKey = row.cells[0].textContent; // Assuming the key is in the first cell
-              
-                if (differentValues.hasOwnProperty(cellKey)) {
-                  const cellNewValue = row.cells[i]; // Assuming the new value is in the second cell
-                  const newValue = cellNewValue.textContent;
-              
-                  updatedValues.push(newValue);
-                  
-                  cellNewValue.style.backgroundColor = "yellow";
-                }
+              const file1Table = document.getElementById("file1_table");
+              const file2Table = document.getElementById("file2_table");
+
+              for (let i = 0; i < file2Table.rows.length; i++) {
+                  const file1Row = file1Table.rows[i];
+                  const file2Row = file2Table.rows[i];
+
+                  for (let j = 0; j < file2Row.cells.length; j++) {
+                    const file1Val = (file1Row) ? file1Row.cells[j].textContent : '';
+                    const file2Val = file2Row.cells[j].textContent;
+
+                    if (file1Val !== file2Val) {
+                      file2Row.cells[j].style.backgroundColor = "yellow";
+                    }
+                  }
               }
-              console.log("updated val================================",updatedValues)
             }
           }
         });
         },
-
     error: function (data) {
       console.log("Inside Error")
         }
