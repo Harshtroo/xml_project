@@ -1,0 +1,13 @@
+asgiref==3.7.2
+backports.zoneinfo==0.2.1
+bs4==0.0.1
+Django==4.2.2
+pip==20.0.2
+pkg-resources==0.0.0
+setuptools==44.0.0
+soupsieve==2.4.1
+sqlparse==0.4.4
+typing-extensions==4.7.1
+wheel==0.34.2
+xmltodict==0.13.0
+xmldiff==2.6.3
