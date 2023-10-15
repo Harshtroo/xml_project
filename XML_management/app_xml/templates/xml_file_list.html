@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/xml_file_list.css' %}">
+<a type="button" class="btn btn-primary" id="btn_compare"  >compare</a>
+
+<table class="table table-bordered" align="center">
+      <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" align="center">Xml File List</h3>
+     <thead>
+      <tr class="table-dark">
+          <th scope="col">No.</th>
+          <th scope="col"> </th>
+          <th scope="col">File name</th>
+      </tr>
+    </thead>
+     <tbody>
+     {% for obj in page_obj %}
+     {% with actual_number=page_obj.start_index|add:forloop.counter0 %}
+        <tr>
+             <td scope="row">{{ actual_number }}</td>
+             <td scope="row" ><input type="checkbox" fileName="{{ obj }}" id="coding" class="check_select" name="xmlFile"/></td>
+             <td scope="row">{{ obj }}</td>
+        </tr>
+     {% endwith %}
+      {% endfor %}
+     </tbody>
+</table>
+
+
+
+<div class="pagination-container">
+
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li {% if page_obj.number == 1 %} class="page-item active" {% endif %}><a class="page-link" href="?page=1">« 1</a></li>
+      <li class="page-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+
+  {% if page_obj.has_next %}
+  <li class="page-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+  <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages}} &raquo;</a></li>
+  {% endif %}
+  </ul>
+  </div>
+
+
+<!-- Click on compare button and show this modal -->
+  <div class="modal fade bd-example-modal-lg" tabindex="-1" id="comparexml" role="dialog"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel" align="center">File Comparison</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+          <div class="row">
+              <div class="col-6">
+            <table class="table table-bordered " align="center" id="file1_table">
+                <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" >file 1</h3>
+                <thead>
+                  <tr class="table-dark">
+                      <th>No.</th>
+                      <th scope="col">Id</th>
+                      <th scope="col">First name</th>
+                      <th scope="col">Last name</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Division</th>
+                      <th scope="col">Building No.</th>
+                      <th scope="col">Room</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+
+                </tbody>
+            </table>
+            </div>
+              <div class="col-6 tab2">
+              <table class="table table-bordered  " align="center" id="file2_table">
+                    <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 px-md-2 mt-3" >file 2</h3>
+                    <thead>
+                      <tr class="table-dark">
+                          <th>No.</th>
+                          <th scope="col">Id</th>
+                          <th scope="col">First name</th>
+                          <th scope="col">Last name</th>
+                          <th scope="col">Title</th>
+                          <th scope="col">Division</th>
+                          <th scope="col">Building No.</th>
+                          <th scope="col">Room</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+              </div>
+            </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+  var csrf_token = "{{csrf_token}}"
+</script>
+
+<script src="{% static 'js/xml_file_list.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="container mt-3">
+    <h1 align="center"> Employee Edit Form </h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="my-2">
+            <label for="id"> Id: </label>
+            <input type="text" class="form-control" id="id" placeholder="Enter First name" value="{{select_employee_data.id}}" name="id" readonly>
+
+        </div>
+        <div class="my-2">
+            <label for="fname"> First Name: </label>
+            <input type="text" class="form-control" id="fname" placeholder="Enter First name" value="{{select_employee_data.firstname}}" name="firstname">
+
+        </div>
+        <div class="my-2">
+            <label for="lname"> Last Name: </label>
+            <input type="text" class="form-control" id="lname" placeholder="Enter Last name" value="{{select_employee_data.lastname}}" name="lastname">
+        </div>
+        <div class="my-2">
+            <label for="title">Title: </label>
+            <input type="text" class="form-control" id="title" placeholder="Title" value="{{select_employee_data.title}}" name="title">
+        </div>
+        <div class="my-2">
+            <label for="division">Division: </label>
+            <input type="text" class="form-control" id="division" placeholder="Enter Your Division" value="{{select_employee_data.division}}" name="division">
+        </div>
+        <div class="my-2">
+            <label for="building">Building: </label>
+            <input type="number" class="form-control" id="building" placeholder="Enter Building " value="{{select_employee_data.building}}" name="building">
+        </div>
+        <div class="my-2">
+            <label for="room">Room: </label>
+            <input type="number" class="form-control" id="room" placeholder="Enter Room number" value="{{select_employee_data.room}}" name="room">
+        </div>
+        <button type="submit" class="btn btn-danger"> Submit</button>
+    </form>
+</div>
+
+
+{% endblock %}

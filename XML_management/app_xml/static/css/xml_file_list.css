@@ -1,0 +1,20 @@
+.table{
+    width: 40%;
+    margin-top:10px;
+}
+#btn_compare{
+    margin-top: 24px;
+    margin-left: 120px;
+}
+
+.new-element {
+    background-color: green;
+}
+
+.redbg{
+    background: green;
+}
+
+.tab2{
+    margin-left: -50px
+}
